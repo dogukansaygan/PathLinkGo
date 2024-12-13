@@ -1,30 +1,43 @@
 import os
 import webbrowser
+import re
 
 Arg = input()
+Args = ""
 
-Args = Arg.split()
+if '"' in Arg:
+    Args = re.findall(r'"([^"]+)"|\S+', Arg)
+else:
+    Args = Arg.split()
 
 def Open():
-    PathList = [ "C:\\Users\\Doğukan\\Desktop\\2" ]
-    LinkList = [ "https://hackthebox.com", "https://tryhackme.com" ]
+
+    FileName = ""
+
+    if Args[0] in ['path', 'p']:
+        FileName = "Paths.txt"
+    
+    elif Args[0] in ['link', 'l']:
+        FileName = "Links.txt"
+
+    FilePath = os.path.abspath(__file__)[0:-13] + FileName
+
+    with open(FilePath, "r", encoding="utf-8") as LinkFile:
+        List = LinkFile.readlines()
     
     AddArg3 = False
     Arg3 = -1
 
     if len(Args) == 1:
             
-            if Args[0] == 'link' or Args[0] == 'l':
+            if Args[0] in ['path', 'p']:
+                print ("\nDosya Konumları\n")
+            
+            elif Args[0] in ['link', 'l']:
                 print ("\nLinkler\n")
 
-                for Link in LinkList:
-                    print(str(LinkList.index(Link) + 1) + ") " + Link)
-                
-            elif Args[0] == 'path' or Args[0] == 'p':
-                print ("\nDosya Konumları\n")
-
-                for Path in PathList:
-                    print(str(PathList.index(Path) + 1) + ") " + Path)
+            for ListItem in List:
+                print(str(List.index(ListItem) + 1) + ") " + ListItem)
 
             print ("\n>> ")
             SelectPathLinkIndex = input()
@@ -54,15 +67,39 @@ def Open():
 
         if type(PathLinkIndex) == int and PathLinkIndex != -1:
             
-            if (Arg[0] == "link" or Arg[0] == "l") and (PathLinkIndex >= 0 and PathLinkIndex < len(LinkList)):
-                webbrowser.open(LinkList[PathLinkIndex])
-            elif (Arg[0] == "path" or Arg[0] == "p") and (PathLinkIndex >= 0 and PathLinkIndex < len(PathList)):
-                if os.path.exists(PathList[PathLinkIndex]):
-                    os.startfile(PathList[PathLinkIndex])
+            if (Arg[0] == "link" or Arg[0] == "l") and (PathLinkIndex >= 0 and PathLinkIndex < len(List)):
+                webbrowser.open(List[PathLinkIndex])
+            elif (Arg[0] == "path" or Arg[0] == "p") and (PathLinkIndex >= 0 and PathLinkIndex < len(List)):
+                if os.path.exists(List[PathLinkIndex]):
+                    os.startfile(List[PathLinkIndex])
                 else:
                     print ("Dosya bulunamadı")
             else:
                 print ("Indeks aşımı")
+
+def Append():
+    if len(Args) == 3:
+
+        FileName = ""
+
+        if Args[1] in ['path', 'p']:
+            FileName = "Paths.txt"
+        elif Args[1] in ['link', 'l']:
+            FileName = "Links.txt"
+
+
+        if FileName:
+            FilePath = os.path.abspath(__file__)[0:-13] + FileName
+
+            with open(FilePath, "r", encoding="utf-8") as File:
+                FileContent = File.read()
+
+            with open(FilePath, "a", encoding="utf-8") as File:
+                if FileContent.strip():
+                    File.write("\n" + str(Args[2]))
+                else:
+                    File.write(str(Args[2]))
+    
 
 if Args[0] == 'help' or Args[0] == 'h':
     print("""
@@ -75,16 +112,31 @@ PathLinkGo'da iki ana seçenekten birini seçmelisin: link (bağlantı) ya da pa
     - Path seçmek için: "path" ya da kısaltması olan "p" komutunu kullanabilirsin
 
 2. Hedef Belirlemek:
-    Seçim yaptıktan sonra gitmek istediğin listede hangi eleman olduğunu belirtmen gerekiyor:
-    - İndeks numarasını yazabilirsin:
+    Seçim yaptıktan sonra gitmek istediğin listede hangi elemanı seçmek istediğini belirtmen gerekiyor:
+    - İndeks numarasını yazabilirsin.
     Örnek: >> 1
 
 3. Hızlı Erişim:
-    Hızlı erişim için ise şu yöntemi kullanabilirsin:
+    Hızlı erişim için şu komutları kullanabilirsin:
     - Link için: link 0
     - Path için: path 0
+
+4. Değer Ekleme (Append):
+    Listeye yeni bir değer eklemek için "append" ya da kısaltması olan "a" komutunu kullanabilirsin.
+    - İkinci parametrede, eklemek istediğin değerin türünü belirtmelisin:
+        - Link eklemek için: "link" ya da kısaltması olan "l"
+        - Path eklemek için: "path" ya da kısaltması olan "p"
+    - Üçüncü parametrede ise eklemek istediğin değeri yazmalısın.
+    
+    Örnekler:
+    >> append path "/root"
+    >> append link "https://github.com"
 """)
+
 
 
 elif Args[0] == 'link' or Args[0] == 'l' or Args[0] == 'path' or Args[0] == 'p':
     Open()
+
+elif Args[0] == 'append' or Args[0] == 'a':
+    Append()

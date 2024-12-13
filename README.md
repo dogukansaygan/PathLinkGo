@@ -15,3 +15,14 @@ Seçim yaptıktan sonra gitmek istediğin listede hangi eleman olduğunu belirtm
 Hızlı erişim için şu yöntemi kullanabilirsin:  
 - **Link için:** `link 0`  
 - **Path için:** `path 0`  
+
+## 4. Değer Ekleme (Append)
+Listeye yeni bir değer eklemek için `"append"` ya da kısaltması olan `"a"` komutunu kullanabilirsin.
+- İkinci parametrede, eklemek istediğin değerin türünü belirtmelisin:
+    - Link eklemek için: `"link"` ya da kısaltması olan `"l"`
+    - Path eklemek için: `"path"` ya da kısaltması olan `"p"`
+- Üçüncü parametrede ise eklemek istediğin değeri yazmalısın.
+    
+### Örnekler:
+- `>> append path "/root"`
+- `>> append link "https://github.com"`
